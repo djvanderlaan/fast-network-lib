@@ -153,7 +153,6 @@ static void BM_threaded_nn1(benchmark::State& state) {
     y[i] = runif();
   }
 
-
   for (auto _ : state) {
     std::vector<std::thread> threads;
     std::vector<std::future<bool>> futures;
@@ -169,19 +168,47 @@ static void BM_threaded_nn1(benchmark::State& state) {
       threads[i].join();
     }
   }
-
-
   //double max = 0;
   //for (const auto& v: result) max = std::max(max, v);
   //std::cout << "Max = " << max << "\n";
 }
 
 
+static void BM_threaded_nn1_nofuture(benchmark::State& state) {
+  //unsigned int n = 1000000;
+  //unsigned int nthread = 4;
+
+  unsigned int n = state.range(0);
+  unsigned int nthread = state.range(1);
+
+  auto chunks = chunk(n, nthread);
+
+  std::vector<double> x(n);
+  std::vector<double> y(n);
+  std::vector<size_t> result(n);
+
+  for (unsigned int i = 0; i < n; ++i) {
+    x[i] = runif();
+    y[i] = runif();
+  }
+
+  for (auto _ : state) {
+    std::vector<std::thread> threads;
+    for (unsigned int i = 0; i < nthread; ++i) {
+      threads.emplace_back(nn1, std::ref(x), std::ref(y), chunks[i], chunks[i+1], 
+        std::ref(result));
+    }
+    for (unsigned int i = 0; i < nthread; ++i) {
+      threads[i].join();
+    }
+  }
+}
 
 
 
 //BENCHMARK(BM_threaded)->Args({10000000, 1})->Args({10000000, 2});
-BENCHMARK(BM_threaded_nn1)->Args({10000, 1})->Args({10000, 2})->Args({10000, 4});;
+BENCHMARK(BM_threaded_nn1)->Args({10000, 1})->Args({10000, 2})->UseRealTime();
+BENCHMARK(BM_threaded_nn1_nofuture)->Args({10000, 1})->Args({10000, 2})->UseRealTime();
 
 
 
