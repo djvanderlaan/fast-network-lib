@@ -143,8 +143,6 @@ static void BM_threaded_nn1(benchmark::State& state) {
   unsigned int nthread = state.range(1);
 
   auto chunks = chunk(n, nthread);
-  for (auto c: chunks) std::cout << c << ",";
-  std::cout << "\n";
 
   std::vector<double> x(n);
   std::vector<double> y(n);
@@ -183,7 +181,7 @@ static void BM_threaded_nn1(benchmark::State& state) {
 
 
 //BENCHMARK(BM_threaded)->Args({10000000, 1})->Args({10000000, 2});
-BENCHMARK(BM_threaded_nn1)->Args({100000, 1})->Args({100000, 2});
+BENCHMARK(BM_threaded_nn1)->Args({10000, 1})->Args({10000, 2})->Args({10000, 4});;
 
 
 
