@@ -16,6 +16,3 @@ weights in separate vectors. This means that an algorithm that does not need the
 weights does not need to copy the weights unnecessarily to memory.
 
 
-
-
-

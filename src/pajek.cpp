@@ -38,9 +38,10 @@ void read_pajek(std::istream& stream, Graph& graph) {
         std::to_string(line) + ".");
       double weight = 1.0;
       s >> weight;
-      graph.add_edge(src-1, dst-1, weight);
+      graph.add_edge(src-1, dst-1, weight, false);
     }
   }
+  graph.update_positions();
 }
 
 void read_pajek(const std::string& filename, Graph& graph) {
@@ -65,3 +66,4 @@ void write_pajek(const Graph& graph, const std::string& filename) {
   std::ofstream stream(filename);
   write_pajek(graph, filename);
 }
+
