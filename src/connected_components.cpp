@@ -18,7 +18,7 @@ std::vector<vid_t> connected_components(const Graph& graph) {
         const vid_t dcomp_id = components[*pe1];
         if (comp_id != dcomp_id) {
           comp_changed = true;
-          comp_id = std::max(comp_id, dcomp_id);
+          comp_id = std::min(comp_id, dcomp_id);
         }
       }
       if (comp_changed) {
