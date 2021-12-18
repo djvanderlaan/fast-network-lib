@@ -12,8 +12,8 @@
 #include <istream>
 
 
-void read_pajek(std::istream& stream, Graph& graph);
-void read_pajek(const std::string& filename, Graph& graph);
+Graph read_pajek(std::istream& stream);
+Graph read_pajek(const std::string& filename);
 
 void write_pajek(const Graph& graph, std::ostream& stream);
 void write_pajek(const Graph& graph, const std::string& filename);

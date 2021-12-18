@@ -4,7 +4,8 @@
 #include <string>
 #include <sstream>
 
-void read_pajek(std::istream& stream, Graph& graph) {
+Graph read_pajek(std::istream& stream) {
+  Graph graph;
   enum state_t {starting, reading_vertices, reading_edges};
   state_t state = starting;
   std::string buffer;
@@ -42,11 +43,12 @@ void read_pajek(std::istream& stream, Graph& graph) {
     }
   }
   graph.update_positions();
+  return graph;
 }
 
-void read_pajek(const std::string& filename, Graph& graph) {
+Graph read_pajek(const std::string& filename) {
   std::ifstream stream(filename);
-  read_pajek(stream, graph);
+  return read_pajek(stream);
 }
 
 void write_pajek(const Graph& graph, std::ostream& stream) {
