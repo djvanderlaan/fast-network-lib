@@ -66,6 +66,6 @@ void write_pajek(const Graph& graph, std::ostream& stream) {
 
 void write_pajek(const Graph& graph, const std::string& filename) {
   std::ofstream stream(filename);
-  write_pajek(graph, filename);
+  write_pajek(graph, stream);
 }
 

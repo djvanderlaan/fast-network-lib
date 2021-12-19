@@ -5,16 +5,25 @@
 #include "pajek.h"
 #include "normalise_weights.h"
 #include "connected_components.h"
+#include "generate_poisson.h"
 
 
 
 int main(int src, char* argv[]) {
-  Graph graph;
-  read_pajek("example_networks/karate.pajek", graph);
+  //Graph graph = read_pajek("example_networks/karate.pajek");
   //graph.update_positions();
 
+  std::cout << "generating" << std::endl;
+  Graph graph = generate_poisson_md(1E5, 10);
+  std::cout << "normalising" << std::endl;
   normalise_weights(graph);
+  std::cout << "writing" << std::endl;
 
+  //write_pajek(graph, std::cout);
+  write_pajek(graph, "example_networks/poisson_1E5_100.pajek");
+  std::cout << "finished" << std::endl;
+
+  /*
   auto p = graph.edges.begin();
   auto pw = graph.weights.begin();
   for (unsigned int i = 0; i < graph.nvertices; ++i) {
@@ -35,6 +44,7 @@ int main(int src, char* argv[]) {
     std::cout << i << "\t\t" << components[i] << "\n";
   }
 
+  */
 
   return 0;
 }
