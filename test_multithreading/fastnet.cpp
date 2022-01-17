@@ -45,11 +45,10 @@ bool my_fun(const std::vector<double>& v0, unsigned int i0, unsigned int iend,
     std::vector<double>& v1) {
   double max_val = 0.0;
   for (unsigned int i = i0; i < iend; ++i) {
-    const double v = std::sin(std::sin(std::cos(std::sin(v0[i])))); 
+    const double v = std::sqrt(v0[i]);
     max_val = std::max(max_val, std::abs(v - 1.0));
     v1[i] = v;
   }
-  //std::cout << "max_val=" << max_val << "\n";
   return max_val < 0.001;
 }
 
@@ -96,7 +95,7 @@ static void BM_threaded(benchmark::State& state) {
     std::vector<double>& p0 = v0;
     std::vector<double>& p1 = v1;
     for (unsigned int iter = 0; iter < 20; ++iter) {
-    //while (true) {
+    while (true) {
       std::vector<std::thread> threads;
       std::vector<std::future<bool>> futures;
       for (unsigned int i = 0; i < nthread; ++i) {
@@ -113,8 +112,7 @@ static void BM_threaded(benchmark::State& state) {
       if (result) break;
       std::swap(p0, p1);
     }
-    // Final result is in p1;
-    std::vector<double>& result = p1;
+  }
   }
 
 
@@ -123,6 +121,58 @@ static void BM_threaded(benchmark::State& state) {
   //std::cout << "Max = " << max << "\n";
 }
 
+
+static void BM_async(benchmark::State& state) {
+  unsigned int n = state.range(0);
+  unsigned int nthread = state.range(1);
+
+  auto chunks = chunk(n, nthread);
+
+  std::vector<double> v0(n);
+  std::vector<double> v1(n);
+  for (unsigned int i = 0; i < v0.size(); ++i) v0[i] = i+1.0;
+
+
+  for (auto _ : state) {
+    std::vector<double>& p0 = v0;
+    std::vector<double>& p1 = v1;
+    for (unsigned int iter = 0; iter < 20; ++iter) {
+    while (true) {
+      std::vector<std::future<bool>> futures;
+      for (unsigned int i = 0; i < nthread; ++i) {
+        futures.emplace_back(std::async(std::launch::async, my_fun, std::ref(p0), chunks[i], chunks[i+1], 
+          std::ref(p1)));
+      }
+      bool result = true;
+      for (unsigned int i = 0; i < nthread; ++i) {
+        result &= futures[i].get();
+      }
+      if (result) break;
+      std::swap(p0, p1);
+    }
+  }
+  }
+}
+
+static void BM_single(benchmark::State& state) {
+  unsigned int n = state.range(0);
+
+  std::vector<double> v0(n);
+  std::vector<double> v1(n);
+  for (unsigned int i = 0; i < v0.size(); ++i) v0[i] = i+1.0;
+
+  for (auto _ : state) {
+    std::vector<double>& p0 = v0;
+    std::vector<double>& p1 = v1;
+    for (unsigned int iter = 0; iter < 20; ++iter) {
+    while (true) {
+      bool result = my_fun(p0, 0, p0.size(), p1);
+      if (result) break;
+      std::swap(p0, p1);
+    }
+  }
+  }
+}
 
 static unsigned int g_seed = 123;
 inline int fastrand() {
@@ -206,7 +256,6 @@ static void BM_threaded_nn1_nofuture(benchmark::State& state) {
 
 
 
-//BENCHMARK(BM_threaded)->Args({10000000, 1})->Args({10000000, 2});
 BENCHMARK(BM_threaded_nn1)->Args({10000, 1})->Args({10000, 2})->Args({10000, 3})->Args({10000, 4})->UseRealTime();
 BENCHMARK(BM_threaded_nn1_nofuture)->Args({10000, 1})->Args({10000, 2})->Args({10000, 3})->Args({10000, 4})->UseRealTime();
 
