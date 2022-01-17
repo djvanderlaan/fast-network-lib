@@ -207,8 +207,8 @@ static void BM_threaded_nn1_nofuture(benchmark::State& state) {
 
 
 //BENCHMARK(BM_threaded)->Args({10000000, 1})->Args({10000000, 2});
-BENCHMARK(BM_threaded_nn1)->Args({10000, 1})->Args({10000, 2})->UseRealTime();
-BENCHMARK(BM_threaded_nn1_nofuture)->Args({10000, 1})->Args({10000, 2})->UseRealTime();
+BENCHMARK(BM_threaded_nn1)->Args({10000, 1})->Args({10000, 2})->Args({10000, 3})->Args({10000, 4})->UseRealTime();
+BENCHMARK(BM_threaded_nn1_nofuture)->Args({10000, 1})->Args({10000, 2})->Args({10000, 3})->Args({10000, 4})->UseRealTime();
 
 
 
