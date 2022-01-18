@@ -14,14 +14,14 @@ int main(int src, char* argv[]) {
   //graph.update_positions();
 
   std::cout << "generating" << std::endl;
-  Graph graph = generate_poisson_md(1E5, 10);
+  Graph graph = generate_poisson(1E6, 100);
   std::cout << "normalising" << std::endl;
   normalise_weights(graph);
   std::cout << "writing" << std::endl;
 
   //write_pajek(graph, std::cout);
-  write_pajek(graph, "example_networks/poisson_1E5_100.pajek");
-  std::cout << "finished" << std::endl;
+  //write_pajek(graph, "example_networks/poisson_1E5_100.pajek");
+  //std::cout << "finished" << std::endl;
 
   /*
   auto p = graph.edges.begin();
