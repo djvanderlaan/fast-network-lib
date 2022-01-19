@@ -51,6 +51,7 @@ int main(int src, char* argv[]) {
   */
 
 
+  std::cout << "generating vertex data for localised random walk" << std::endl;
   std::vector<double> vertex_weights(graph.nvertices);
   std::vector<double> vertex_values(graph.nvertices);
   for (vid_t i = 0; i < graph.nvertices; ++i) {
@@ -58,16 +59,16 @@ int main(int src, char* argv[]) {
     vertex_values[i] = 1*((i % 3) == 0);
   }
 
+  std::cout << "localised random walk" << std::endl;
   unsigned int nstep;
   auto res = localised_random_walk(graph, vertex_values, vertex_weights, 
     0.85, 1000, 1E-5, &nstep);
 
+  std::cout << "printing result of localised random walk" << std::endl;
   std::cout << "nstep = " << nstep << "\n";
-
   double sum = 0;
   double n = 0;
   for (vid_t i = 0; i < graph.nvertices; ++i) {
-    //std::cout << i << " " << vertex_values[i] << ": " << res[i] << "\n";
     if (!std::isnan(res[i])) { 
       sum += res[i];
       n += 1.0;
