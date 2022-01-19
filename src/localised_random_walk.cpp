@@ -1,5 +1,7 @@
 #include "localised_random_walk.h"
+#include "chunk.h"
 #include <cmath>
+#include <future>
 
 class localised_random_walk_computer {
   public:
@@ -16,11 +18,12 @@ class localised_random_walk_computer {
       }
     }
 
-    bool computation_step() {
-      auto p = graph.edges.cbegin();
-      auto pw = graph.weights.cbegin();
+    bool computation_step_range(vid_t start, vid_t end) {
+      vid_t pos = graph.positions[start];
+      auto p = graph.edges.cbegin() + pos;
+      auto pw = graph.weights.cbegin() + pos;
       bool stop = true;
-      for (vid_t i = 0; i < graph.nvertices; ++i) {
+      for (vid_t i = start; i < end; ++i) {
         // Calculate current end result; at the end we can compare the new
         // result to this an decide that our result is accurate enough
         const double yprev = xsum[i]/wsum[i];
@@ -44,10 +47,31 @@ class localised_random_walk_computer {
       return stop;
     }
 
-    unsigned int compute() {
+    bool computation_step(unsigned int nthreads) {
+      nthreads = std::min(graph.nvertices, nthreads);
+      if (nthreads <= 1) return computation_step_range(0, graph.nvertices);
+      auto chunks = chunk(graph.nvertices, nthreads);
+
+      // Launch threads
+      std::vector<std::future<bool>> futures;
+      for (unsigned int i = 0; i < nthreads; ++i) {
+        futures.emplace_back(
+          std::async(std::launch::async, &localised_random_walk_computer::computation_step_range, 
+            this, chunks[i], chunks[i+1])
+        );
+      }
+      // Wait for threads to finish and gather results
+      bool stop = true;
+      for (unsigned int i = 0; i < nthreads; ++i) {
+        stop &= futures[i].get();
+      }
+      return stop;
+    }
+
+    unsigned int compute(unsigned int nthreads = 0) {
       unsigned int step = 0;
       for (; step < nstep; ++step) {
-        const bool stop = computation_step();
+        const bool stop = computation_step(nthreads);
         if (stop) break;
         std::swap(xcur, xprev);
         std::swap(wcur, wprev);
@@ -58,8 +82,6 @@ class localised_random_walk_computer {
     std::vector<double> result() {
       std::vector<double> y(graph.nvertices);
       for (vid_t i = 0; i < graph.nvertices; ++i) {
-        //if (graph.degrees[i] == 0) y[i] = 0;
-        //else y[i] = xsum[i]/wsum[i];
         y[i] = xsum[i]/wsum[i];
       }
       return y;
@@ -76,13 +98,14 @@ class localised_random_walk_computer {
     std::vector<double> wsum, wcur, wprev;
 };
 
+
 std::vector<double> localised_random_walk(const Graph& graph, 
     const std::vector<double>& values, std::vector<double>& weights, 
     double alpha, unsigned int nstep_max, double precision, 
-    unsigned int* nstep) {
+    unsigned int nthreads, unsigned int* nstep) {
   localised_random_walk_computer computer(graph, values, weights, 
     alpha, nstep_max, precision);
-  unsigned int n = computer.compute();
+  unsigned int n = computer.compute(nthreads);
   if (nstep) (*nstep) = n;
   return computer.result();
 }

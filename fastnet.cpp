@@ -62,7 +62,7 @@ int main(int src, char* argv[]) {
   std::cout << "localised random walk" << std::endl;
   unsigned int nstep;
   auto res = localised_random_walk(graph, vertex_values, vertex_weights, 
-    0.85, 1000, 1E-5, &nstep);
+    0.85, 1000, 1E-5, 4, &nstep);
 
   std::cout << "printing result of localised random walk" << std::endl;
   std::cout << "nstep = " << nstep << "\n";
