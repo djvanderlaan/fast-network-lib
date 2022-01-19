@@ -73,7 +73,7 @@ Graph generate_poisson(vid_t nvertices, double mean_degree, unsigned int seed) {
   graph.edges.resize(nedges);
   graph.weights.resize(nedges);
   // Step 2 generate the edges for each vertex
-  std::uniform_int_distribution<> dint(nvertices);
+  std::uniform_int_distribution<> dint(0, nvertices-1);
   auto pedge = graph.edges.begin();
   auto pw = graph.weights.begin();
   for (vid_t i = 0; i < nvertices; ++i) {
