@@ -1,6 +1,7 @@
 #include <iostream>
 #include <iomanip>
 
+#include <cmath>
 #include "graph.h"
 #include "pajek.h"
 #include "normalise_weights.h"
@@ -15,7 +16,7 @@ int main(int src, char* argv[]) {
   //graph.update_positions();
 
   std::cout << "generating" << std::endl;
-  Graph graph = generate_poisson(100, 1);
+  Graph graph = generate_poisson(1E5, 200);
   std::cout << "normalising" << std::endl;
   normalise_weights(graph);
 
@@ -24,6 +25,7 @@ int main(int src, char* argv[]) {
   //write_pajek(graph, "example_networks/poisson_1E5_100.pajek");
   //std::cout << "finished" << std::endl;
 
+  /*
   auto p = graph.edges.begin();
   auto pw = graph.weights.begin();
   for (unsigned int i = 0; i < graph.nvertices; ++i) {
@@ -36,6 +38,7 @@ int main(int src, char* argv[]) {
       sum += *pw;
     }
   }
+  */
 
 
   /*
@@ -55,15 +58,22 @@ int main(int src, char* argv[]) {
     vertex_values[i] = 1*((i % 3) == 0);
   }
 
+  unsigned int nstep;
   auto res = localised_random_walk(graph, vertex_values, vertex_weights, 
-    0.85, 400);
+    0.85, 1000, 1E-5, &nstep);
+
+  std::cout << "nstep = " << nstep << "\n";
 
   double sum = 0;
+  double n = 0;
   for (vid_t i = 0; i < graph.nvertices; ++i) {
-    std::cout << i << " " << vertex_values[i] << ": " << res[i] << "\n";
-    sum += res[i];
+    //std::cout << i << " " << vertex_values[i] << ": " << res[i] << "\n";
+    if (!std::isnan(res[i])) { 
+      sum += res[i];
+      n += 1.0;
+    }
   }
-  std::cout << "mean = " << sum/graph.nvertices << "\n";
+  std::cout << "mean = " << sum/n << "\n";
 
   return 0;
 }

@@ -1,6 +1,5 @@
 #include "localised_random_walk.h"
 #include <cmath>
-#include <iostream>
 
 class localised_random_walk_computer {
   public:
@@ -29,7 +28,6 @@ class localised_random_walk_computer {
         xcur[i] = 0.0;
         wcur[i] = 0.0;
         for (degree_t j = 0; j < k; ++j, ++p, ++pw) {
-          std::cout << *p << "\n";
           wcur[i] += (*pw) * wprev[*p];
           xcur[i] += (*pw) * xprev[*p];
         }
@@ -80,10 +78,12 @@ class localised_random_walk_computer {
 
 std::vector<double> localised_random_walk(const Graph& graph, 
     const std::vector<double>& values, std::vector<double>& weights, 
-    double alpha, unsigned int nstep_max, double precision) {
+    double alpha, unsigned int nstep_max, double precision, 
+    unsigned int* nstep) {
   localised_random_walk_computer computer(graph, values, weights, 
     alpha, nstep_max, precision);
-  computer.compute();
+  unsigned int n = computer.compute();
+  if (nstep) (*nstep) = n;
   return computer.result();
 }
 
