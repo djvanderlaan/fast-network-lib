@@ -27,4 +27,8 @@ std::vector<double> localised_random_walk(const Graph& graph,
     double alpha = 0.85, unsigned int nstep_max = 1000, double precision = 1E-5,
     unsigned int nthreads = 0, unsigned int* nstep = nullptr);
 
+std::vector<double> localised_random_walk2(const Graph& graph, 
+    const std::vector<double>& values, const std::vector<double>& weights, 
+    const std::vector<double>& alphas, unsigned int nstep_max = 1000, double precision = 1E-5, 
+    unsigned int nthreads = 0, unsigned int* nstep = nullptr);
 #endif

@@ -22,6 +22,8 @@ class localised_random_walk2_computer {
       vid_t pos = graph.positions[start];
       auto p = graph.edges.cbegin() + pos;
       auto pw = graph.weights.cbegin() + pos;
+      size_t nalpha = alphas.size();
+      size_t alpha_pos = start % nalpha;
       bool stop = true;
       for (vid_t i = start; i < end; ++i) {
         // Calculate current end result; at the end we can compare the new
@@ -34,7 +36,8 @@ class localised_random_walk2_computer {
           wcur[i] += (*pw) * wprev[*p];
           xcur[i] += (*pw) * xprev[*p];
         }
-        const double alpha = alphas[i];
+        const double alpha = alphas[alpha_pos++];
+        if (alpha_pos >= nalpha) alpha_pos = 0;
         wsum[i] += (1-alpha) * wcur[i];
         xsum[i] += (1-alpha) * xcur[i];
         wcur[i] *= alpha;
@@ -110,5 +113,4 @@ std::vector<double> localised_random_walk2(const Graph& graph,
   if (nstep) (*nstep) = n;
   return computer.result();
 }
-
 

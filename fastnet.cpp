@@ -1,5 +1,6 @@
 #include <iostream>
 #include <iomanip>
+#include <chrono>
 
 #include <cmath>
 #include "graph.h"
@@ -60,9 +61,21 @@ int main(int src, char* argv[]) {
   }
 
   std::cout << "localised random walk" << std::endl;
+  auto start = std::chrono::steady_clock::now();
   unsigned int nstep;
+  auto res2 = localised_random_walk2(graph, vertex_values, vertex_weights, 
+    {1, 0.85}, 1000, 1E-5, 4, &nstep);
+  auto end = std::chrono::steady_clock::now();
+  std::chrono::duration<double> diff = end - start;
+  std::cout << "localised_random_walk " << diff.count() << "s\n";
+
+  std::cout << "localised random walk2" << std::endl;
+  auto start2 = std::chrono::steady_clock::now();
   auto res = localised_random_walk(graph, vertex_values, vertex_weights, 
     0.85, 1000, 1E-5, 4, &nstep);
+  auto end2 = std::chrono::steady_clock::now();
+  std::chrono::duration<double> diff2 = end2 - start2;
+  std::cout << "localised_random_walk 2 " << diff2.count() << "s\n";
 
   std::cout << "printing result of localised random walk" << std::endl;
   std::cout << "nstep = " << nstep << "\n";
