@@ -7,9 +7,9 @@ class localised_random_walk_computer {
   public:
     localised_random_walk_computer(const Graph& graph_, 
       const std::vector<double>& values_, const std::vector<double>& weights_,
-      double alpha_, unsigned int nstep_max_, double precision_) : 
+      const std::vector<double>& alphas_, unsigned int nstep_max_, double precision_) : 
         graph(graph_), values(values_), weights(weights_), 
-        alpha(alpha_), nstep(nstep_max_), precision(precision_), 
+        alphas(alphas_), nstep(nstep_max_), precision(precision_), 
         xsum(graph.nvertices, 0.0), xcur(graph.nvertices), xprev(values_), 
         wsum(graph.nvertices, 0.0), wcur(graph.nvertices), wprev(weights_) {
       // xprev needs to be initialised to x*weight
@@ -22,6 +22,8 @@ class localised_random_walk_computer {
       vid_t pos = graph.positions[start];
       auto p = graph.edges.cbegin() + pos;
       auto pw = graph.weights.cbegin() + pos;
+      size_t nalpha = alphas.size();
+      size_t alpha_pos = start % nalpha;
       bool stop = true;
       for (vid_t i = start; i < end; ++i) {
         // Calculate current end result; at the end we can compare the new
@@ -34,6 +36,8 @@ class localised_random_walk_computer {
           wcur[i] += (*pw) * wprev[*p];
           xcur[i] += (*pw) * xprev[*p];
         }
+        const double alpha = alphas[alpha_pos++];
+        if (alpha_pos >= nalpha) alpha_pos = 0;
         wsum[i] += (1-alpha) * wcur[i];
         xsum[i] += (1-alpha) * xcur[i];
         wcur[i] *= alpha;
@@ -91,7 +95,7 @@ class localised_random_walk_computer {
     const Graph& graph;
     const std::vector<double>& values;
     const std::vector<double>& weights;
-    const double alpha;
+    const std::vector<double>& alphas;
     const unsigned int nstep;
     const double precision;
     std::vector<double> xsum, xcur, xprev;
@@ -100,11 +104,20 @@ class localised_random_walk_computer {
 
 
 std::vector<double> localised_random_walk(const Graph& graph, 
-    const std::vector<double>& values, std::vector<double>& weights, 
+    const std::vector<double>& values, const std::vector<double>& weights, 
     double alpha, unsigned int nstep_max, double precision, 
     unsigned int nthreads, unsigned int* nstep) {
+  std::vector<double> alphas = {alpha};
+  return localised_random_walk(graph, values, weights, alphas, 
+    nstep_max, precision, nthreads, nstep);
+}
+
+std::vector<double> localised_random_walk(const Graph& graph, 
+    const std::vector<double>& values, const std::vector<double>& weights, 
+    const std::vector<double>& alphas, unsigned int nstep_max, double precision, 
+    unsigned int nthreads, unsigned int* nstep) {
   localised_random_walk_computer computer(graph, values, weights, 
-    alpha, nstep_max, precision);
+    alphas, nstep_max, precision);
   unsigned int n = computer.compute(nthreads);
   if (nstep) (*nstep) = n;
   return computer.result();

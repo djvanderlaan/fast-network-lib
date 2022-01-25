@@ -4,7 +4,7 @@ INCLUDEDIR = include
 TMPDIR     = tmp
 
 CXX        = g++
-CXXFLAGS   = -O2 -std=c++11 -I$(INCLUDEDIR) -Wall
+CXXFLAGS   = -O3 -std=c++11 -I$(INCLUDEDIR) -Wall
 #CXXFLAGS  = -pg -std=c++11 -I$(INCLUDEDIR) -Wall
 LIBS       = -pthread
 

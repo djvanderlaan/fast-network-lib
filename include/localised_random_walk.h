@@ -13,7 +13,10 @@
 //   the number of vertices in the graph. 
 // - weights: vector with weights for each node. Should have the same length as
 //   the number of vertices in the graph.
-// - alpha: probability of continuing the random walk. Should be >=0 and <1. 
+// - alpha: probability of continuing the random walk. Should be >=0 and <1. Can
+//   also be a vector, in which case each vertex can have a different
+//   probability. When the number of vertices in the graph is larger than the
+//   number of elements in `alphas` the elements in `alphas` are recycled. 
 // - nstep_max: maximumber of iterations to perform. 
 // - precision: when all of the scores change less than precision the iteration
 //   is stopped.
@@ -23,12 +26,13 @@
 //   variable pointed to. 
 //
 std::vector<double> localised_random_walk(const Graph& graph, 
-    const std::vector<double>& values, std::vector<double>& weights, 
-    double alpha = 0.85, unsigned int nstep_max = 1000, double precision = 1E-5,
+    const std::vector<double>& values, const std::vector<double>& weights, 
+    double alpha = 0.85, unsigned int nstep_max = 1000, double precision = 1E-5, 
     unsigned int nthreads = 0, unsigned int* nstep = nullptr);
 
-std::vector<double> localised_random_walk2(const Graph& graph, 
+std::vector<double> localised_random_walk(const Graph& graph, 
     const std::vector<double>& values, const std::vector<double>& weights, 
     const std::vector<double>& alphas, unsigned int nstep_max = 1000, double precision = 1E-5, 
     unsigned int nthreads = 0, unsigned int* nstep = nullptr);
+
 #endif
