@@ -3,6 +3,6 @@
 
 #include <vector>
 
-std::vector<size_t> chunk(size_t n, size_t nchunks);
+std::vector<std::size_t> chunk(std::size_t n, std::size_t nchunks);
 
 #endif

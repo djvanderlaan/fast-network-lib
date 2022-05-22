@@ -7,11 +7,11 @@ struct FastRand {
 
   FastRand(unsigned int seed = 0) : g_seed(seed) {}
   
-  result_type min() {
+  static constexpr result_type min() {
     return 0;
   }
 
-  result_type max() {
+  static constexpr result_type max() {
     return 32767;
   }
 
@@ -32,11 +32,11 @@ struct WELL512 {
       state[i] = rnd0();
   }
 
-  result_type min() {
+  static constexpr result_type min() {
     return 0;
   }
 
-  result_type max() {
+  static constexpr result_type max() {
     return UINT_MAX;
   }
 
