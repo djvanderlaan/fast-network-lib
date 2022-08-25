@@ -61,6 +61,7 @@ struct WELL512 {
 
 Graph generate_poisson(vid_t nvertices, double mean_degree, unsigned int seed) {
   Graph graph(nvertices);
+  if (nvertices == 0) return graph;
   // Step 1 generate the degree for each vertex
   WELL512 gen(seed);
   std::poisson_distribution<> dpois(mean_degree);
